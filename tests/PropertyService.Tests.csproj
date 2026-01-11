@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PropertyService.Application\PropertyService.Application.csproj" />
-    <ProjectReference Include="..\..\src\PropertyService.Api\PropertyService.Api.csproj" />
-    <ProjectReference Include="..\..\src\PropertyService.Domain\PropertyService.Domain.csproj" />
+    <ProjectReference Include="..\src\PropertyService.Application\PropertyService.Application.csproj" />
+    <ProjectReference Include="..\src\PropertyService.Api\PropertyService.Api.csproj" />
+    <ProjectReference Include="..\src\PropertyService.Domain\PropertyService.Domain.csproj" />
   </ItemGroup>
 
 </Project>

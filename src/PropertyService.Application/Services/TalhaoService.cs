@@ -14,20 +14,28 @@ public class TalhaoService
         _propriedadeRepository = propriedadeRepository;
     }
 
-    public async Task<Talhao?> ObterPorIdAsync(Guid id)
+    public async Task<Talhao?> ObterPorIdEProdutorIdAsync(Guid id, Guid produtorId)
     {
-        return await _talhaoRepository.ObterPorIdAsync(id);
+        var talhao = await _talhaoRepository.ObterPorIdAsync(id);
+        if (talhao == null)
+            return null;
+
+        var propriedade = await _propriedadeRepository.ObterPorIdEProdutorIdAsync(talhao.PropriedadeId, produtorId);
+        return propriedade == null ? null : talhao;
     }
 
-    public async Task<IEnumerable<Talhao>> ObterPorPropriedadeIdAsync(Guid propriedadeId)
+    public async Task<IEnumerable<Talhao>> ObterPorPropriedadeIdEProdutorIdAsync(Guid propriedadeId, Guid produtorId)
     {
+        var propriedade = await _propriedadeRepository.ObterPorIdEProdutorIdAsync(propriedadeId, produtorId);
+        if (propriedade == null)
+            return Enumerable.Empty<Talhao>();
+
         return await _talhaoRepository.ObterPorPropriedadeIdAsync(propriedadeId);
     }
 
-    public async Task<Talhao?> CriarAsync(Guid propriedadeId, string nome, string cultura, string? descricao = null, decimal? areaHectares = null)
+    public async Task<Talhao?> CriarAsync(Guid propriedadeId, Guid produtorId, string nome, string cultura, string? descricao = null, decimal? areaHectares = null)
     {
-        // Verificar se a propriedade existe
-        var propriedade = await _propriedadeRepository.ObterPorIdAsync(propriedadeId);
+        var propriedade = await _propriedadeRepository.ObterPorIdEProdutorIdAsync(propriedadeId, produtorId);
         if (propriedade == null)
             return null;
 
@@ -43,9 +51,9 @@ public class TalhaoService
         return await _talhaoRepository.CriarAsync(talhao);
     }
 
-    public async Task<Talhao?> AtualizarAsync(Guid id, string nome, string cultura, string? descricao = null, decimal? areaHectares = null)
+    public async Task<Talhao?> AtualizarAsync(Guid id, Guid produtorId, string nome, string cultura, string? descricao = null, decimal? areaHectares = null)
     {
-        var talhao = await _talhaoRepository.ObterPorIdAsync(id);
+        var talhao = await ObterPorIdEProdutorIdAsync(id, produtorId);
         if (talhao == null)
             return null;
 
@@ -57,8 +65,9 @@ public class TalhaoService
         return await _talhaoRepository.AtualizarAsync(talhao);
     }
 
-    public async Task<bool> ExcluirAsync(Guid id)
+    public async Task<bool> ExcluirAsync(Guid id, Guid produtorId)
     {
-        return await _talhaoRepository.ExcluirAsync(id);
+        var talhao = await ObterPorIdEProdutorIdAsync(id, produtorId);
+        return talhao != null && await _talhaoRepository.ExcluirAsync(id);
     }
 }

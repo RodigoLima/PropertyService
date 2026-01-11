@@ -5,48 +5,46 @@ namespace PropertyService.Application.Services;
 
 public class PropriedadeService
 {
-    private readonly IPropriedadeRepository _propriedadeRepository;
+    private readonly IPropriedadeRepository _repository;
 
-    public PropriedadeService(IPropriedadeRepository propriedadeRepository)
+    public PropriedadeService(IPropriedadeRepository repository)
     {
-        _propriedadeRepository = propriedadeRepository;
+        _repository = repository;
     }
 
-    public async Task<Propriedade?> ObterPorIdAsync(Guid id)
-    {
-        return await _propriedadeRepository.ObterPorIdAsync(id);
-    }
+    public async Task<Propriedade?> ObterPorIdAsync(Guid id, Guid produtorId)
+        => await _repository.ObterPorIdEProdutorIdAsync(id, produtorId);
 
-    public async Task<IEnumerable<Propriedade>> ObterTodasAsync()
-    {
-        return await _propriedadeRepository.ObterTodasAsync();
-    }
+    public async Task<IEnumerable<Propriedade>> ObterPorProdutorIdAsync(Guid produtorId)
+        => await _repository.ObterPorProdutorIdAsync(produtorId);
 
-    public async Task<Propriedade> CriarAsync(string nome, string? descricao = null)
+    public async Task<Propriedade> CriarAsync(Guid produtorId, string nome, string? descricao = null)
     {
         var propriedade = new Propriedade
         {
+            ProdutorId = produtorId,
             Nome = nome,
             Descricao = descricao
         };
 
-        return await _propriedadeRepository.CriarAsync(propriedade);
+        return await _repository.CriarAsync(propriedade);
     }
 
-    public async Task<Propriedade?> AtualizarAsync(Guid id, string nome, string? descricao = null)
+    public async Task<Propriedade?> AtualizarAsync(Guid id, Guid produtorId, string nome, string? descricao = null)
     {
-        var propriedade = await _propriedadeRepository.ObterPorIdAsync(id);
+        var propriedade = await _repository.ObterPorIdEProdutorIdAsync(id, produtorId);
         if (propriedade == null)
             return null;
 
         propriedade.Nome = nome;
         propriedade.Descricao = descricao;
 
-        return await _propriedadeRepository.AtualizarAsync(propriedade);
+        return await _repository.AtualizarAsync(propriedade);
     }
 
-    public async Task<bool> ExcluirAsync(Guid id)
+    public async Task<bool> ExcluirAsync(Guid id, Guid produtorId)
     {
-        return await _propriedadeRepository.ExcluirAsync(id);
+        var propriedade = await _repository.ObterPorIdEProdutorIdAsync(id, produtorId);
+        return propriedade != null && await _repository.ExcluirAsync(id);
     }
 }

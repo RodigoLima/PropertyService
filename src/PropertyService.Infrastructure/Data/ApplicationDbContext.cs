@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Propriedade>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.ProdutorId).IsRequired();
             entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Descricao).HasMaxLength(1000);
             entity.Property(e => e.DataCriacao).IsRequired();

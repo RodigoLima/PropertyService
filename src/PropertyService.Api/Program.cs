@@ -1,38 +1,40 @@
+using PropertyService.Api.Configuration;
+using PropertyService.Api.Services;
 using PropertyService.Application.Interfaces;
 using PropertyService.Application.Services;
 using PropertyService.Infrastructure.Data;
 using PropertyService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Configurações
+builder.Services.ConfigureSwagger();
 builder.Services.AddControllers();
+builder.Services.ConfigureJwt(builder.Configuration);
 
-// Configurar Entity Framework com PostgreSQL
+// Entity Framework
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
-    // Desabilitar warning de mudanças pendentes no modelo
     options.ConfigureWarnings(warnings => 
         warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
 
-// Registrar repositórios
+// Repositórios
 builder.Services.AddScoped<IPropriedadeRepository, PropriedadeRepository>();
 builder.Services.AddScoped<ITalhaoRepository, TalhaoRepository>();
 
-// Registrar serviços
+// Serviços
 builder.Services.AddScoped<PropriedadeService>();
 builder.Services.AddScoped<TalhaoService>();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -40,6 +42,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

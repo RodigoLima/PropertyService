@@ -21,10 +21,25 @@ public class PropriedadeRepository : IPropriedadeRepository
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
+    public async Task<Propriedade?> ObterPorIdEProdutorIdAsync(Guid id, Guid produtorId)
+    {
+        return await _context.Propriedades
+            .Include(p => p.Talhoes)
+            .FirstOrDefaultAsync(p => p.Id == id && p.ProdutorId == produtorId);
+    }
+
     public async Task<IEnumerable<Propriedade>> ObterTodasAsync()
     {
         return await _context.Propriedades
             .Include(p => p.Talhoes)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Propriedade>> ObterPorProdutorIdAsync(Guid produtorId)
+    {
+        return await _context.Propriedades
+            .Include(p => p.Talhoes)
+            .Where(p => p.ProdutorId == produtorId)
             .ToListAsync();
     }
 

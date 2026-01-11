@@ -5,13 +5,18 @@ using PropertyService.Application.Services;
 using PropertyService.Infrastructure.Data;
 using PropertyService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configurações
 builder.Services.ConfigureSwagger();
-builder.Services.AddControllers();
-builder.Services.ConfigureJwt(builder.Configuration);
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+builder.Services.ConfigureJwt(builder.Configuration, builder.Environment);
 
 // Entity Framework
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -33,6 +38,13 @@ builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+// Aplicar migrations automaticamente
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Pipeline
 if (app.Environment.IsDevelopment())

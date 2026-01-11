@@ -15,13 +15,6 @@ public class TalhoesController : BaseController
         _talhaoService = talhaoService;
     }
 
-    [HttpGet("propriedade/{propriedadeId}")]
-    public async Task<IActionResult> ObterPorPropriedadeId(Guid propriedadeId)
-    {
-        var talhoes = await _talhaoService.ObterPorPropriedadeIdEProdutorIdAsync(propriedadeId, GetProdutorId());
-        return Ok(talhoes);
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> ObterPorId(Guid id)
     {

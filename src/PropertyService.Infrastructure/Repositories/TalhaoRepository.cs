@@ -17,7 +17,6 @@ public class TalhaoRepository : ITalhaoRepository
     public async Task<Talhao?> ObterPorIdAsync(Guid id)
     {
         return await _context.Talhoes
-            .Include(t => t.Propriedade)
             .FirstOrDefaultAsync(t => t.Id == id);
     }
 
@@ -35,6 +34,9 @@ public class TalhaoRepository : ITalhaoRepository
         
         _context.Talhoes.Add(talhao);
         await _context.SaveChangesAsync();
+        
+        // Limpar referência circular para evitar problemas na serialização
+        _context.Entry(talhao).Reference(t => t.Propriedade).CurrentValue = null;
         
         return talhao;
     }

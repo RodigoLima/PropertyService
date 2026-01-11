@@ -1,0 +1,15 @@
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\bin\Debug\net9.0\ManagementService.Application.deps.json
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\bin\Debug\net9.0\ManagementService.Application.dll
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\bin\Debug\net9.0\ManagementService.Application.pdb
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\bin\Debug\net9.0\ManagementService.Domain.dll
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\bin\Debug\net9.0\ManagementService.Domain.pdb
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ManagementService.Application.csproj.AssemblyReference.cache
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ManagementService.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ManagementService.Application.AssemblyInfoInputs.cache
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ManagementService.Application.AssemblyInfo.cs
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ManagementService.Application.csproj.CoreCompileInputs.cache
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\Manageme.E7F3046B.Up2Date
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ManagementService.Application.dll
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\refint\ManagementService.Application.dll
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ManagementService.Application.pdb
+C:\Users\Rodrigo Ferreira\Documents\Projetos\ManagementService\src\ManagementService.Application\obj\Debug\net9.0\ref\ManagementService.Application.dll

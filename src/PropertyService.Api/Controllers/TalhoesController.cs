@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using PropertyService.Api.DTOs;
 using PropertyService.Application.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace PropertyService.Api.Controllers;
 
@@ -20,6 +20,13 @@ public class TalhoesController : BaseController
     {
         var talhao = await _talhaoService.ObterPorIdEProdutorIdAsync(id, GetProdutorId());
         return talhao == null ? NotFound() : Ok(talhao);
+    }
+
+    [HttpGet("propriedade/{propriedadeId}")]
+    public async Task<IActionResult> ObterPorPropriedadeId(Guid propriedadeId)
+    {
+        var talhoes = await _talhaoService.ObterPorPropriedadeIdEProdutorIdAsync(propriedadeId, GetProdutorId());
+        return Ok(talhoes);
     }
 
     [HttpPost("propriedade/{propriedadeId}")]

@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
 
 namespace PropertyService.Api.Configuration;
 
@@ -12,79 +9,63 @@ public static class JwtConfiguration
 {
     public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
-        var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>() 
-            ?? throw new InvalidOperationException("Configuração JWT não encontrada.");
+        const string developmentBypassScheme = "DevelopmentBypass";
 
-        var isDevelopmentBypass = environment.IsDevelopment() 
-            && configuration.GetValue<bool>("Development:DisableJwtValidation", false);
+        var jwtSection = configuration.GetSection("Jwt");
+        services.Configure<JwtSettings>(jwtSection);
 
-        services.AddAuthentication(options =>
+        var isDevelopmentBypass =
+            environment.IsDevelopment()
+            && configuration.GetValue("Development:DisableJwtValidation", false);
+
+        var defaultScheme = isDevelopmentBypass
+            ? developmentBypassScheme
+            : JwtBearerDefaults.AuthenticationScheme;
+
+        var authBuilder = services.AddAuthentication(options =>
         {
-            if (isDevelopmentBypass)
-            {
-                options.DefaultAuthenticateScheme = "DevelopmentBypass";
-                options.DefaultChallengeScheme = "DevelopmentBypass";
-            }
-            else
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }
-        })
-        .AddScheme<AuthenticationSchemeOptions, DevelopmentBypassHandler>(
-            "DevelopmentBypass",
-            _ => { })
-        .AddJwtBearer(options =>
+            options.DefaultAuthenticateScheme = defaultScheme;
+            options.DefaultChallengeScheme = defaultScheme;
+        });
+
+        if (isDevelopmentBypass)
         {
+            authBuilder.AddScheme<AuthenticationSchemeOptions, DevelopmentBypassHandler>(
+                developmentBypassScheme,
+                _ => { });
+        }
+        else
+        {
+            var jwtSettings = jwtSection.Get<JwtSettings>()
+                ?? throw new InvalidOperationException("Configuração JWT não encontrada.");
+
             if (string.IsNullOrWhiteSpace(jwtSettings.Key))
                 throw new InvalidOperationException("JWT Key não configurada.");
 
-            var signingKey = Convert.FromBase64String(jwtSettings.Key);
-            var validAudiences = new[] { jwtSettings.Audience }
-                .Concat(jwtSettings.ValidAudiences ?? Array.Empty<string>())
-                .Where(a => !string.IsNullOrWhiteSpace(a))
-                .Distinct()
-                .ToArray();
-
-            options.TokenValidationParameters = new TokenValidationParameters
+            byte[] signingKey;
+            try
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings.Issuer,
-                ValidAudiences = validAudiences,
-                IssuerSigningKey = new SymmetricSecurityKey(signingKey)
-            };
-        });
+                signingKey = Convert.FromBase64String(jwtSettings.Key);
+            }
+            catch (FormatException ex)
+            {
+                throw new InvalidOperationException("JWT Key inválida (esperado Base64).", ex);
+            }
+
+            authBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(signingKey)
+                };
+            });
+        }
 
         services.AddAuthorization();
-    }
-}
-
-// Handler que sempre autentica (apenas para desenvolvimento)
-internal class DevelopmentBypassHandler : AuthenticationHandler<AuthenticationSchemeOptions>
-{
-    public DevelopmentBypassHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder) : base(options, logger, encoder)
-    {
-    }
-
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-    {
-        // Cria uma identidade com claims básicas para desenvolvimento
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, "dev-user"),
-            new Claim("produtorId", "00000000-0000-0000-0000-000000000000")
-        };
-
-        var identity = new ClaimsIdentity(claims, "DevelopmentBypass");
-        var principal = new ClaimsPrincipal(identity);
-        var ticket = new AuthenticationTicket(principal, "DevelopmentBypass");
-
-        return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 }

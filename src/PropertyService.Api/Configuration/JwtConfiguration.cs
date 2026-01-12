@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 
 namespace PropertyService.Api.Configuration;
@@ -16,31 +15,36 @@ public static class JwtConfiguration
         var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>() 
             ?? throw new InvalidOperationException("Configuração JWT não encontrada.");
 
-        var disableJwtValidation = environment.IsDevelopment() 
+        var isDevelopmentBypass = environment.IsDevelopment() 
             && configuration.GetValue<bool>("Development:DisableJwtValidation", false);
 
         services.AddAuthentication(options =>
         {
-            if (disableJwtValidation)
+            if (isDevelopmentBypass)
             {
-                // Em dev com flag ativa, usa esquema que sempre autentica
                 options.DefaultAuthenticateScheme = "DevelopmentBypass";
                 options.DefaultChallengeScheme = "DevelopmentBypass";
             }
             else
             {
-                // Produção ou dev com validação ativa: usa JWT normal
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }
         })
         .AddScheme<AuthenticationSchemeOptions, DevelopmentBypassHandler>(
             "DevelopmentBypass",
-            options => { })
+            _ => { })
         .AddJwtBearer(options =>
         {
-            if (string.IsNullOrEmpty(jwtSettings.SecretKey))
-                throw new InvalidOperationException("JWT SecretKey não configurada.");
+            if (string.IsNullOrWhiteSpace(jwtSettings.Key))
+                throw new InvalidOperationException("JWT Key não configurada.");
+
+            var signingKey = Convert.FromBase64String(jwtSettings.Key);
+            var validAudiences = new[] { jwtSettings.Audience }
+                .Concat(jwtSettings.ValidAudiences ?? Array.Empty<string>())
+                .Where(a => !string.IsNullOrWhiteSpace(a))
+                .Distinct()
+                .ToArray();
 
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -49,8 +53,8 @@ public static class JwtConfiguration
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings.Issuer,
-                ValidAudience = jwtSettings.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+                ValidAudiences = validAudiences,
+                IssuerSigningKey = new SymmetricSecurityKey(signingKey)
             };
         });
 

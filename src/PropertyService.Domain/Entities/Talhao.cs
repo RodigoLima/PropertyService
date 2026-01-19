@@ -7,6 +7,7 @@ public class Talhao
     public string? Descricao { get; set; }
     public string Cultura { get; set; } = string.Empty; // Cultura plantada
     public decimal? AreaHectares { get; set; } // Área em hectares (opcional)
+    public StatusTalhao Status { get; set; } = StatusTalhao.Normal;
     public DateTime DataCriacao { get; set; }
     
     // Relacionamento: Um talhão pertence a uma propriedade

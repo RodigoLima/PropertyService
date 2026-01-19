@@ -6,6 +6,7 @@ using PropertyService.Infrastructure.Data;
 using PropertyService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Observabilidade - Métricas Prometheus
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

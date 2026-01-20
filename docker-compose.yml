@@ -20,50 +20,6 @@ services:
     networks:
       - propertyservice-network
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: propertyservice-prometheus
-    ports:
-      - "9091:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-    depends_on:
-      - api
-    restart: unless-stopped
-    networks:
-      - propertyservice-network
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: propertyservice-grafana
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-      - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-    depends_on:
-      - prometheus
-    restart: unless-stopped
-    networks:
-      - propertyservice-network
-
-volumes:
-  prometheus_data:
-    driver: local
-  grafana_data:
-    driver: local
-
 networks:
   propertyservice-network:
     driver: bridge

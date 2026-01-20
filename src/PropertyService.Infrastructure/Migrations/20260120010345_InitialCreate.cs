@@ -16,6 +16,7 @@ namespace PropertyService.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProdutorId = table.Column<Guid>(type: "uuid", nullable: false),
                     Nome = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Descricao = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -34,6 +35,7 @@ namespace PropertyService.Infrastructure.Migrations
                     Descricao = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     Cultura = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     AreaHectares = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PropriedadeId = table.Column<Guid>(type: "uuid", nullable: false)
                 },

@@ -12,8 +12,8 @@ using PropertyService.Infrastructure.Data;
 namespace PropertyService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260111172601_AddProdutorIdToPropriedade")]
-    partial class AddProdutorIdToPropriedade
+    [Migration("20260120010345_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,9 @@ namespace PropertyService.Infrastructure.Migrations
 
                     b.Property<Guid>("PropriedadeId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

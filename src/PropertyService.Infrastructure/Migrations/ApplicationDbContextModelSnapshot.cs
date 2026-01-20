@@ -78,6 +78,9 @@ namespace PropertyService.Infrastructure.Migrations
                     b.Property<Guid>("PropriedadeId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PropriedadeId");

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using PropertyService.Api.Controllers;
 using PropertyService.Api.DTOs;
@@ -14,6 +15,7 @@ public class PropriedadesControllerTests
     private readonly Mock<IPropriedadeRepository> _repositoryMock;
     private readonly PropriedadeService _service;
     private readonly Mock<IUserContextService> _userContextMock;
+    private readonly Mock<ILogger<PropriedadesController>> _loggerMock;
     private readonly PropriedadesController _controller;
 
     public PropriedadesControllerTests()
@@ -21,7 +23,8 @@ public class PropriedadesControllerTests
         _repositoryMock = new Mock<IPropriedadeRepository>();
         _service = new PropriedadeService(_repositoryMock.Object);
         _userContextMock = new Mock<IUserContextService>();
-        _controller = new PropriedadesController(_service, _userContextMock.Object);
+        _loggerMock = new Mock<ILogger<PropriedadesController>>();
+        _controller = new PropriedadesController(_service, _userContextMock.Object, _loggerMock.Object);
     }
 
     [Fact]

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: propertyservice-config
+  namespace: property-service
+  labels:
+    app: propertyservice-config
+data:
+  ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"

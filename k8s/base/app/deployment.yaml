@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: propertyservice-api
+  namespace: property-service
+  labels:
+    app: propertyservice-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: propertyservice-api
+  template:
+    metadata:
+      labels:
+        app: propertyservice-api
+    spec:
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h postgres -p 5432; do
+                echo "Aguardando Postgres..."
+                sleep 2
+              done
+      containers:
+        - name: propertyservice-api
+          image: propertyservice-api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: propertyservice-secret
+            - configMapRef:
+                name: propertyservice-config
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

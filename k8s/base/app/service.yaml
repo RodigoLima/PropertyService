@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: propertyservice-service
+  namespace: property-service
+  labels:
+    app: propertyservice-api
+spec:
+  selector:
+    app: propertyservice-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      nodePort: 30080
+  type: NodePort

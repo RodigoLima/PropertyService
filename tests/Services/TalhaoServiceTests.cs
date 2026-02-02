@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MassTransit;
 using Moq;
 using PropertyService.Application.Interfaces;
 using PropertyService.Application.Services;
@@ -10,13 +11,16 @@ public class TalhaoServiceTests
 {
     private readonly Mock<ITalhaoRepository> _talhaoRepositoryMock;
     private readonly Mock<IPropriedadeRepository> _propriedadeRepositoryMock;
+    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly TalhaoService _service;
 
     public TalhaoServiceTests()
     {
         _talhaoRepositoryMock = new Mock<ITalhaoRepository>();
         _propriedadeRepositoryMock = new Mock<IPropriedadeRepository>();
-        _service = new TalhaoService(_talhaoRepositoryMock.Object, _propriedadeRepositoryMock.Object);
+        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _publishEndpointMock.Setup(p => p.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _service = new TalhaoService(_talhaoRepositoryMock.Object, _propriedadeRepositoryMock.Object, _publishEndpointMock.Object);
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,6 +14,7 @@ namespace PropertyService.Tests.Controllers;
 public class PropriedadesControllerTests
 {
     private readonly Mock<IPropriedadeRepository> _repositoryMock;
+    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly PropriedadeService _service;
     private readonly Mock<IUserContextService> _userContextMock;
     private readonly Mock<ILogger<PropriedadesController>> _loggerMock;
@@ -21,7 +23,9 @@ public class PropriedadesControllerTests
     public PropriedadesControllerTests()
     {
         _repositoryMock = new Mock<IPropriedadeRepository>();
-        _service = new PropriedadeService(_repositoryMock.Object);
+        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _publishEndpointMock.Setup(p => p.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _service = new PropriedadeService(_repositoryMock.Object, _publishEndpointMock.Object);
         _userContextMock = new Mock<IUserContextService>();
         _loggerMock = new Mock<ILogger<PropriedadesController>>();
         _controller = new PropriedadesController(_service, _userContextMock.Object, _loggerMock.Object);

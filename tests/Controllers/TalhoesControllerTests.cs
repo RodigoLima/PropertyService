@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using PropertyService.Api.Controllers;
@@ -13,6 +14,7 @@ public class TalhoesControllerTests
 {
     private readonly Mock<ITalhaoRepository> _talhaoRepositoryMock;
     private readonly Mock<IPropriedadeRepository> _propriedadeRepositoryMock;
+    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly TalhaoService _service;
     private readonly Mock<IUserContextService> _userContextMock;
     private readonly TalhoesController _controller;
@@ -21,7 +23,9 @@ public class TalhoesControllerTests
     {
         _talhaoRepositoryMock = new Mock<ITalhaoRepository>();
         _propriedadeRepositoryMock = new Mock<IPropriedadeRepository>();
-        _service = new TalhaoService(_talhaoRepositoryMock.Object, _propriedadeRepositoryMock.Object);
+        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _publishEndpointMock.Setup(p => p.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _service = new TalhaoService(_talhaoRepositoryMock.Object, _propriedadeRepositoryMock.Object, _publishEndpointMock.Object);
         _userContextMock = new Mock<IUserContextService>();
         _controller = new TalhoesController(_service, _userContextMock.Object);
     }

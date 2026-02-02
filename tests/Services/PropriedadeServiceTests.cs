@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MassTransit;
 using Moq;
 using PropertyService.Application.Interfaces;
 using PropertyService.Application.Services;
@@ -9,12 +10,15 @@ namespace PropertyService.Tests.Services;
 public class PropriedadeServiceTests
 {
     private readonly Mock<IPropriedadeRepository> _repositoryMock;
+    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly PropriedadeService _service;
 
     public PropriedadeServiceTests()
     {
         _repositoryMock = new Mock<IPropriedadeRepository>();
-        _service = new PropriedadeService(_repositoryMock.Object);
+        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _publishEndpointMock.Setup(p => p.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _service = new PropriedadeService(_repositoryMock.Object, _publishEndpointMock.Object);
     }
 
     [Fact]

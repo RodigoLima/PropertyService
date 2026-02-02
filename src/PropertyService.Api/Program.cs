@@ -1,15 +1,16 @@
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Prometheus;
 using PropertyService.Api.Configuration;
-using PropertyService.Api.Services;
 using PropertyService.Api.Middlewares;
+using PropertyService.Api.Services;
 using PropertyService.Application.Interfaces;
 using PropertyService.Application.Services;
 using PropertyService.Infrastructure.Data;
 using PropertyService.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
-using Prometheus;
 using Serilog;
 using Serilog.Events;
+using System.Text.Json.Serialization;
 
 // Configurar Serilog
 Log.Logger = new LoggerConfiguration()
@@ -63,6 +64,22 @@ builder.Services.AddScoped<PropriedadeService>();
 builder.Services.AddScoped<TalhaoService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var host = builder.Configuration["RabbitMq:Host"] ?? "localhost";
+        var vhost = builder.Configuration["RabbitMq:VirtualHost"] ?? "/";
+        var username = builder.Configuration["RabbitMq:Username"] ?? "admin";
+        var password = builder.Configuration["RabbitMq:Password"] ?? "admin123";
+        cfg.Host(host, vhost, h =>
+        {
+            h.Username(username);
+            h.Password(password);
+        });
+    });
+});
 
 var app = builder.Build();
 

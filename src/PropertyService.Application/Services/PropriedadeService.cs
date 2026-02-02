@@ -1,3 +1,5 @@
+using AgroSolutions.Contracts;
+using MassTransit;
 using PropertyService.Application.Interfaces;
 using PropertyService.Domain.Entities;
 
@@ -6,10 +8,12 @@ namespace PropertyService.Application.Services;
 public class PropriedadeService
 {
     private readonly IPropriedadeRepository _repository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public PropriedadeService(IPropriedadeRepository repository)
+    public PropriedadeService(IPropriedadeRepository repository, IPublishEndpoint publishEndpoint)
     {
         _repository = repository;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Propriedade?> ObterPorIdAsync(Guid id, Guid produtorId)
@@ -27,7 +31,9 @@ public class PropriedadeService
             Descricao = descricao
         };
 
-        return await _repository.CriarAsync(propriedade);
+        var created = await _repository.CriarAsync(propriedade);
+        await _publishEndpoint.Publish(new PropriedadeDataMessage(created.Id, created.Nome, created.ProdutorId));
+        return created;
     }
 
     public async Task<Propriedade?> AtualizarAsync(Guid id, Guid produtorId, string nome, string? descricao = null)
@@ -39,7 +45,9 @@ public class PropriedadeService
         propriedade.Nome = nome;
         propriedade.Descricao = descricao;
 
-        return await _repository.AtualizarAsync(propriedade);
+        var updated = await _repository.AtualizarAsync(propriedade);
+        await _publishEndpoint.Publish(new PropriedadeDataMessage(updated.Id, updated.Nome, updated.ProdutorId));
+        return updated;
     }
 
     public async Task<bool> ExcluirAsync(Guid id, Guid produtorId)

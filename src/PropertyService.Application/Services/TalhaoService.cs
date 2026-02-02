@@ -1,3 +1,5 @@
+using AgroSolutions.Contracts;
+using MassTransit;
 using PropertyService.Application.Interfaces;
 using PropertyService.Domain.Entities;
 
@@ -7,11 +9,13 @@ public class TalhaoService
 {
     private readonly ITalhaoRepository _talhaoRepository;
     private readonly IPropriedadeRepository _propriedadeRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public TalhaoService(ITalhaoRepository talhaoRepository, IPropriedadeRepository propriedadeRepository)
+    public TalhaoService(ITalhaoRepository talhaoRepository, IPropriedadeRepository propriedadeRepository, IPublishEndpoint publishEndpoint)
     {
         _talhaoRepository = talhaoRepository;
         _propriedadeRepository = propriedadeRepository;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Talhao?> ObterPorIdEProdutorIdAsync(Guid id, Guid produtorId)
@@ -48,7 +52,9 @@ public class TalhaoService
             AreaHectares = areaHectares
         };
 
-        return await _talhaoRepository.CriarAsync(talhao);
+        var created = await _talhaoRepository.CriarAsync(talhao);
+        await _publishEndpoint.Publish(new TalhaoDataMessage(created.Id, created.Nome, created.PropriedadeId));
+        return created;
     }
 
     public async Task<Talhao?> AtualizarAsync(Guid id, Guid produtorId, string nome, string cultura, string? descricao = null, decimal? areaHectares = null)
@@ -62,7 +68,9 @@ public class TalhaoService
         talhao.Descricao = descricao;
         talhao.AreaHectares = areaHectares;
 
-        return await _talhaoRepository.AtualizarAsync(talhao);
+        var updated = await _talhaoRepository.AtualizarAsync(talhao);
+        await _publishEndpoint.Publish(new TalhaoDataMessage(updated.Id, updated.Nome, updated.PropriedadeId));
+        return updated;
     }
 
     public async Task<bool> ExcluirAsync(Guid id, Guid produtorId)

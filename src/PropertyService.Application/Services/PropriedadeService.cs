@@ -32,7 +32,8 @@ public class PropriedadeService
         };
 
         var created = await _repository.CriarAsync(propriedade);
-        await _publishEndpoint.Publish(new PropriedadeDataMessage(created.Id, created.Nome, created.ProdutorId));
+        if (created.ProdutorId != Guid.Empty)
+            await _publishEndpoint.Publish(new PropriedadeDataMessage(created.Id, created.Nome, created.ProdutorId));
         return created;
     }
 
@@ -46,7 +47,8 @@ public class PropriedadeService
         propriedade.Descricao = descricao;
 
         var updated = await _repository.AtualizarAsync(propriedade);
-        await _publishEndpoint.Publish(new PropriedadeDataMessage(updated.Id, updated.Nome, updated.ProdutorId));
+        if (updated.ProdutorId != Guid.Empty)
+            await _publishEndpoint.Publish(new PropriedadeDataMessage(updated.Id, updated.Nome, updated.ProdutorId));
         return updated;
     }
 

@@ -47,8 +47,11 @@ public class PropriedadesController : BaseController
     [HttpPost]
     public async Task<IActionResult> Criar([FromBody] CriarPropriedadeDto dto)
     {
+        var produtorId = GetProdutorId();
+        if (produtorId == Guid.Empty)
+            return BadRequest("ProdutorId inválido no token.");
         _logger.LogInformation("Criando nova propriedade: {Nome}", dto.Nome);
-        var propriedade = await _propriedadeService.CriarAsync(GetProdutorId(), dto.Nome, dto.Descricao);
+        var propriedade = await _propriedadeService.CriarAsync(produtorId, dto.Nome, dto.Descricao);
         _logger.LogInformation("Propriedade {PropriedadeId} criada com sucesso", propriedade.Id);
         return CreatedAtAction(nameof(ObterPorId), new { id = propriedade.Id }, propriedade);
     }

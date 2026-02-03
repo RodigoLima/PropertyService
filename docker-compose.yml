@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    restart: unless-stopped
+    networks:
+      - propertyservice-network
+
   api:
     build:
       context: .
@@ -12,10 +25,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=PropertyService;Username=docker;Password=docker
+      - RabbitMq__Host=rabbitmq
       - Jwt__Issuer=IdentityService
       - Jwt__Key=7G+H65bLToXxqzPvj7+q0oQUlxJp1WvdOU3nv3ArA1s=
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - rabbitmq
     restart: unless-stopped
     networks:
       - propertyservice-network

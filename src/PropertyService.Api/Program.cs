@@ -121,6 +121,8 @@ var app = builder.Build();
     app.MapControllers();
 
     Log.Information("PropertyService iniciado com sucesso");
+    var urls = app.Configuration["ASPNETCORE_URLS"] ?? app.Configuration["urls"] ?? "http://localhost:5173";
+    Log.Information("Escutando em: {Urls}", urls);
     app.Run();
 }
 catch (Exception ex)

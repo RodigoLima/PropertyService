@@ -31,10 +31,7 @@ public class PropriedadeService
             Descricao = descricao
         };
 
-        var created = await _repository.CriarAsync(propriedade);
-        if (created.ProdutorId != Guid.Empty)
-            await _publishEndpoint.Publish(new PropriedadeDataMessage(created.Id, created.Nome, created.ProdutorId));
-        return created;
+        return await _repository.CriarAsync(propriedade);
     }
 
     public async Task<Propriedade?> AtualizarAsync(Guid id, Guid produtorId, string nome, string? descricao = null)
@@ -46,10 +43,7 @@ public class PropriedadeService
         propriedade.Nome = nome;
         propriedade.Descricao = descricao;
 
-        var updated = await _repository.AtualizarAsync(propriedade);
-        if (updated.ProdutorId != Guid.Empty)
-            await _publishEndpoint.Publish(new PropriedadeDataMessage(updated.Id, updated.Nome, updated.ProdutorId));
-        return updated;
+        return await _repository.AtualizarAsync(propriedade);
     }
 
     public async Task<bool> ExcluirAsync(Guid id, Guid produtorId)

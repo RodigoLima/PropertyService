@@ -1,19 +1,6 @@
 version: '3.8'
 
 services:
-  rabbitmq:
-    image: rabbitmq:4-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin123
-    restart: unless-stopped
-    networks:
-      - propertyservice-network
-
   api:
     build:
       context: .

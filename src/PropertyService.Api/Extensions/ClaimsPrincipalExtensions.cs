@@ -6,8 +6,9 @@ public static class ClaimsPrincipalExtensions
 {
     public static Guid? GetProdutorId(this ClaimsPrincipal user)
     {
-        var claim = user.FindFirst("sub") 
+        var claim = user.FindFirst(ClaimTypes.NameIdentifier)
                  ?? user.FindFirst("userId") 
+                 ?? user.FindFirst("sub") 
                  ?? user.FindFirst("produtorId");
         
         return claim != null && Guid.TryParse(claim.Value, out var produtorId) 

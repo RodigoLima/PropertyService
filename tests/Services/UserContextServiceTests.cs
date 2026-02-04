@@ -94,7 +94,7 @@ public class UserContextServiceTests
         // Act & Assert
         var act = () => service.GetProdutorId();
         act.Should().Throw<UnauthorizedAccessException>()
-            .WithMessage("ProdutorId não encontrado no token.");
+            .WithMessage("UserId não encontrado no token.");
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class UserContextServiceTests
         // Act & Assert
         var act = () => service.GetProdutorId();
         act.Should().Throw<UnauthorizedAccessException>()
-            .WithMessage("ProdutorId não encontrado no token.");
+            .WithMessage("UserId não encontrado no token.");
     }
 
     [Fact]

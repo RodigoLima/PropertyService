@@ -20,12 +20,13 @@ public class UserContextService : IUserContextService
         if (user == null)
             throw new UnauthorizedAccessException("Usuário não autenticado.");
 
-        var claim = user.FindFirst("sub") 
+        var claim = user.FindFirst(ClaimTypes.NameIdentifier)
                  ?? user.FindFirst("userId") 
+                 ?? user.FindFirst("sub") 
                  ?? user.FindFirst("produtorId");
 
         if (claim == null || !Guid.TryParse(claim.Value, out var produtorId))
-            throw new UnauthorizedAccessException("ProdutorId não encontrado no token.");
+            throw new UnauthorizedAccessException("UserId não encontrado no token.");
 
         return produtorId;
     }

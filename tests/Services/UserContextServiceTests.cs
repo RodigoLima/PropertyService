@@ -1,16 +1,34 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using PropertyService.Api.Configuration;
 using PropertyService.Api.Services;
 using System.Security.Claims;
+using Moq;
 
 namespace PropertyService.Tests.Services;
 
 public class UserContextServiceTests
 {
+    private static readonly ILogger<UserContextService> Logger = new Mock<ILogger<UserContextService>>().Object;
+
+    [Fact]
+    public void GetProdutorId_QuandoBypassAtivo_DeveRetornarProdutorIdDev()
+    {
+        var identity = new ClaimsIdentity([], DevelopmentBypassConstants.SchemeName);
+        var principal = new ClaimsPrincipal(identity);
+        var httpContext = new DefaultHttpContext { User = principal };
+        var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
+        var service = new UserContextService(httpContextAccessor, Logger);
+
+        var resultado = service.GetProdutorId();
+
+        resultado.Should().Be(DevelopmentBypassConstants.ProdutorId);
+    }
+
     [Fact]
     public void GetProdutorId_QuandoClaimSubExiste_DeveRetornarGuid()
     {
-        // Arrange
         var produtorId = Guid.NewGuid();
         var claims = new List<Claim>
         {
@@ -22,7 +40,7 @@ public class UserContextServiceTests
         var httpContext = new DefaultHttpContext { User = principal };
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
         // Act
         var resultado = service.GetProdutorId();
@@ -46,12 +64,10 @@ public class UserContextServiceTests
         var httpContext = new DefaultHttpContext { User = principal };
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
-        // Act
         var resultado = service.GetProdutorId();
 
-        // Assert
         resultado.Should().Be(produtorId);
     }
 
@@ -70,12 +86,10 @@ public class UserContextServiceTests
         var httpContext = new DefaultHttpContext { User = principal };
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
-        // Act
         var resultado = service.GetProdutorId();
 
-        // Assert
         resultado.Should().Be(produtorId);
     }
 
@@ -89,9 +103,8 @@ public class UserContextServiceTests
         var httpContext = new DefaultHttpContext { User = principal };
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
-        // Act & Assert
         var act = () => service.GetProdutorId();
         act.Should().Throw<UnauthorizedAccessException>()
             .WithMessage("UserId não encontrado no token.");
@@ -102,9 +115,8 @@ public class UserContextServiceTests
     {
         // Arrange
         var httpContextAccessor = new HttpContextAccessor { HttpContext = null };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
-        // Act & Assert
         var act = () => service.GetProdutorId();
         act.Should().Throw<UnauthorizedAccessException>()
             .WithMessage("Usuário não autenticado.");
@@ -124,9 +136,8 @@ public class UserContextServiceTests
         var httpContext = new DefaultHttpContext { User = principal };
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
-        // Act & Assert
         var act = () => service.GetProdutorId();
         act.Should().Throw<UnauthorizedAccessException>()
             .WithMessage("UserId não encontrado no token.");
@@ -142,12 +153,10 @@ public class UserContextServiceTests
         var httpContext = new DefaultHttpContext { User = principal };
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
-        // Act
         var resultado = service.IsAuthenticated;
 
-        // Assert
         resultado.Should().BeTrue();
     }
 
@@ -156,12 +165,10 @@ public class UserContextServiceTests
     {
         // Arrange
         var httpContextAccessor = new HttpContextAccessor { HttpContext = null };
-        var service = new UserContextService(httpContextAccessor);
+        var service = new UserContextService(httpContextAccessor, Logger);
 
-        // Act
         var resultado = service.IsAuthenticated;
 
-        // Assert
         resultado.Should().BeFalse();
     }
 }

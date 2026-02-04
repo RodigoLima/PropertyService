@@ -12,8 +12,6 @@ public static class JwtConfiguration
     {
         JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-        const string developmentBypassScheme = "DevelopmentBypass";
-
         var jwtSection = configuration.GetSection("Jwt");
         services.Configure<JwtSettings>(jwtSection);
 
@@ -22,7 +20,7 @@ public static class JwtConfiguration
             && configuration.GetValue("Development:DisableJwtValidation", false);
 
         var defaultScheme = isDevelopmentBypass
-            ? developmentBypassScheme
+            ? DevelopmentBypassConstants.SchemeName
             : JwtBearerDefaults.AuthenticationScheme;
 
         var authBuilder = services.AddAuthentication(options =>
@@ -34,7 +32,7 @@ public static class JwtConfiguration
         if (isDevelopmentBypass)
         {
             authBuilder.AddScheme<AuthenticationSchemeOptions, DevelopmentBypassHandler>(
-                developmentBypassScheme,
+                DevelopmentBypassConstants.SchemeName,
                 _ => { });
         }
         else

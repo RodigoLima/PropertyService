@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,8 @@ public static class JwtConfiguration
 {
     public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
+        JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
         const string developmentBypassScheme = "DevelopmentBypass";
 
         var jwtSection = configuration.GetSection("Jwt");

@@ -18,7 +18,8 @@ public class PropriedadeServiceTests
         _repositoryMock = new Mock<IPropriedadeRepository>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
         _publishEndpointMock.Setup(p => p.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        _service = new PropriedadeService(_repositoryMock.Object, _publishEndpointMock.Object);
+        var loggerMock = new Mock<ILogger<PropriedadeService>>();
+        _service = new PropriedadeService(_repositoryMock.Object, _publishEndpointMock.Object, loggerMock.Object);
     }
 
     [Fact]

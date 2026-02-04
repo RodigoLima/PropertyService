@@ -1,5 +1,6 @@
 using AgroSolutions.Contracts;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using PropertyService.Application.Interfaces;
 using PropertyService.Domain.Entities;
 
@@ -10,12 +11,14 @@ public class TalhaoService
     private readonly ITalhaoRepository _talhaoRepository;
     private readonly IPropriedadeRepository _propriedadeRepository;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ILogger<TalhaoService> _logger;
 
-    public TalhaoService(ITalhaoRepository talhaoRepository, IPropriedadeRepository propriedadeRepository, IPublishEndpoint publishEndpoint)
+    public TalhaoService(ITalhaoRepository talhaoRepository, IPropriedadeRepository propriedadeRepository, IPublishEndpoint publishEndpoint, ILogger<TalhaoService> logger)
     {
         _talhaoRepository = talhaoRepository;
         _propriedadeRepository = propriedadeRepository;
         _publishEndpoint = publishEndpoint;
+        _logger = logger;
     }
 
     public async Task<Talhao?> ObterPorIdEProdutorIdAsync(Guid id, Guid produtorId)
@@ -53,7 +56,14 @@ public class TalhaoService
         };
 
         var created = await _talhaoRepository.CriarAsync(talhao);
-        await _publishEndpoint.Publish(new TalhaoDataMessage(created.Id, created.Nome, created.PropriedadeId));
+        try
+        {
+            await _publishEndpoint.Publish(new TalhaoDataMessage(created.Id, created.Nome, created.PropriedadeId));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Falha ao publicar TalhaoDataMessage para talhão {TalhaoId}", created.Id);
+        }
         return created;
     }
 
@@ -69,7 +79,14 @@ public class TalhaoService
         talhao.AreaHectares = areaHectares;
 
         var updated = await _talhaoRepository.AtualizarAsync(talhao);
-        await _publishEndpoint.Publish(new TalhaoDataMessage(updated.Id, updated.Nome, updated.PropriedadeId));
+        try
+        {
+            await _publishEndpoint.Publish(new TalhaoDataMessage(updated.Id, updated.Nome, updated.PropriedadeId));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Falha ao publicar TalhaoDataMessage para talhão {TalhaoId}", updated.Id);
+        }
         return updated;
     }
 

@@ -20,7 +20,8 @@ public class TalhaoServiceTests
         _propriedadeRepositoryMock = new Mock<IPropriedadeRepository>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
         _publishEndpointMock.Setup(p => p.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        _service = new TalhaoService(_talhaoRepositoryMock.Object, _propriedadeRepositoryMock.Object, _publishEndpointMock.Object);
+        var loggerMock = new Mock<ILogger<TalhaoService>>();
+        _service = new TalhaoService(_talhaoRepositoryMock.Object, _propriedadeRepositoryMock.Object, _publishEndpointMock.Object, loggerMock.Object);
     }
 
     [Fact]

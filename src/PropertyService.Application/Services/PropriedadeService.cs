@@ -1,5 +1,6 @@
 using AgroSolutions.Contracts;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using PropertyService.Application.Interfaces;
 using PropertyService.Domain.Entities;
 
@@ -9,11 +10,13 @@ public class PropriedadeService
 {
     private readonly IPropriedadeRepository _repository;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ILogger<PropriedadeService> _logger;
 
-    public PropriedadeService(IPropriedadeRepository repository, IPublishEndpoint publishEndpoint)
+    public PropriedadeService(IPropriedadeRepository repository, IPublishEndpoint publishEndpoint, ILogger<PropriedadeService> logger)
     {
         _repository = repository;
         _publishEndpoint = publishEndpoint;
+        _logger = logger;
     }
 
     public async Task<Propriedade?> ObterPorIdAsync(Guid id, Guid produtorId)
@@ -32,7 +35,14 @@ public class PropriedadeService
         };
 
         var created = await _repository.CriarAsync(propriedade);
-        await _publishEndpoint.Publish(new PropriedadeDataMessage(created.Id, created.Nome, created.ProdutorId));
+        try
+        {
+            await _publishEndpoint.Publish(new PropriedadeDataMessage(created.Id, created.Nome, created.ProdutorId));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Falha ao publicar PropriedadeDataMessage para propriedade {PropriedadeId}", created.Id);
+        }
         return created;
     }
 
@@ -46,7 +56,14 @@ public class PropriedadeService
         propriedade.Descricao = descricao;
 
         var updated = await _repository.AtualizarAsync(propriedade);
-        await _publishEndpoint.Publish(new PropriedadeDataMessage(updated.Id, updated.Nome, updated.ProdutorId));
+        try
+        {
+            await _publishEndpoint.Publish(new PropriedadeDataMessage(updated.Id, updated.Nome, updated.ProdutorId));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Falha ao publicar PropriedadeDataMessage para propriedade {PropriedadeId}", updated.Id);
+        }
         return updated;
     }
 

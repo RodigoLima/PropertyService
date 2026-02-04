@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using Moq;
 using PropertyService.Application.Interfaces;
 using PropertyService.Application.Services;

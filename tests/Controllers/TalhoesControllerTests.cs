@@ -1,6 +1,7 @@
 using FluentAssertions;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using PropertyService.Api.Controllers;
 using PropertyService.Api.DTOs;

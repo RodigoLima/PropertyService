@@ -22,6 +22,7 @@ JWT_KEY="${JWT_KEY:-7G+H65bLToXxqzPvj7+q0oQUlxJp1WvdOU3nv3ArA1s=}"
 ASPNETCORE_ENVIRONMENT="${ASPNETCORE_ENVIRONMENT:-Development}"
 
 [ -f "$ENV_FILE" ] && set -a && source "$ENV_FILE" && set +a
+[[ -z "$RABBITMQ_VHOST" || "$RABBITMQ_VHOST" == *":"* || "$RABBITMQ_VHOST" == *"Program"* ]] && RABBITMQ_VHOST="/"
 
 echo "================================================"
 echo "  PropertyService - Build & Deploy (Kind)"

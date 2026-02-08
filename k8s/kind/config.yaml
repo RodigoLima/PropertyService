@@ -9,6 +9,8 @@ nodes:
         hostPort: 30080
       - containerPort: 30081
         hostPort: 30081
+      - containerPort: 30082
+        hostPort: 30082
       - containerPort: 30032
         hostPort: 30032
       - containerPort: 30033

@@ -86,6 +86,10 @@ echo "Aplicando API..."
 kubectl apply -f "$ROOT_DIR/k8s/base/app/deployment.yaml"
 kubectl apply -f "$ROOT_DIR/k8s/base/app/service.yaml"
 
+echo "Aplicando observabilidade (Prometheus + Grafana)..."
+kubectl apply -f "$ROOT_DIR/k8s/base/observability/prometheus"
+kubectl apply -f "$ROOT_DIR/k8s/base/observability/grafana"
+
 echo "Aguardando API..."
 kubectl wait --for=condition=ready pod -l app=propertyservice-api -n "$NAMESPACE" --timeout=120s 2>/dev/null || true
 
@@ -93,4 +97,6 @@ echo ""
 echo "Deploy concluído. Pods:"
 kubectl get pods -n "$NAMESPACE"
 echo ""
-echo "API (NodePort 30080): http://localhost:30080"
+echo "API:       http://localhost:30080"
+echo "Grafana:   http://localhost:30380 (admin/admin)"
+echo "Prometheus: http://localhost:30980"

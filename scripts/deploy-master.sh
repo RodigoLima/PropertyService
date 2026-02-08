@@ -7,11 +7,11 @@ PROJECTS_ROOT="$(cd "$PROPERTY_ROOT/.." && pwd)"
 
 DATA_INGESTION="$PROJECTS_ROOT/AgroSolutions.DataIngestion"
 IDENTITY="$PROJECTS_ROOT/IdentityService"
-PROPERTY="$PROJECTS_ROOT/PropertyService"
+PROPERTY="$PROPERTY_ROOT"
 MEDICOES="$PROJECTS_ROOT/AgroSolutions.Medicoes"
 
 echo "================================================"
-echo "  Deploy Master - Todos os serviços (Kind)"
+echo "  Deploy Master - Todos os microserviços (Kind)"
 echo "================================================"
 
 command -v kind >/dev/null 2>&1 || { echo "Kind não instalado."; exit 1; }
@@ -47,10 +47,11 @@ echo "APIs:"
 echo "  DataIngestion:  http://localhost:5000"
 echo "  Identity:       http://localhost:30081"
 echo "  Property:       http://localhost:30080"
-echo "  Medicoes:       (worker - namespace agro-medicoes)"
+echo "  Medicoes:       namespace agro-medicoes (worker)"
 echo ""
 echo "Infra:"
 echo "  RabbitMQ:       http://localhost:15672 (admin/admin123)"
 echo "  Grafana:        http://localhost:30300 | 30380 | 30381 (admin/admin)"
 echo "  Prometheus:     http://localhost:30900 | 30980 | 30981"
 echo ""
+

@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-KIND_NAME="dev-propertyservice"
+KIND_NAME="agro-dev"
 NAMESPACE="property-service"
 ENV_FILE="$ROOT_DIR/.env"
 

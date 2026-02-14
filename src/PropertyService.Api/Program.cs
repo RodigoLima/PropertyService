@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
 using PropertyService.Api.Configuration;
+using PropertyService.Api.Consumers;
 using PropertyService.Api.Middlewares;
 using PropertyService.Api.Services;
 using PropertyService.Application.Interfaces;
@@ -67,6 +68,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<TalhaoStatusConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         var host = builder.Configuration["RabbitMq:Host"] ?? "localhost";
@@ -79,6 +81,7 @@ builder.Services.AddMassTransit(x =>
             h.Username(username);
             h.Password(password);
         });
+        cfg.ConfigureEndpoints(context);
     });
 });
 

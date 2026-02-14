@@ -9,4 +9,5 @@ public interface ITalhaoRepository
     Task<Talhao> CriarAsync(Talhao talhao);
     Task<Talhao> AtualizarAsync(Talhao talhao);
     Task<bool> ExcluirAsync(Guid id);
+    Task<bool> AtualizarStatusAsync(Guid id, StatusTalhao status);
 }

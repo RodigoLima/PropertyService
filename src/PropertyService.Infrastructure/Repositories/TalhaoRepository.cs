@@ -60,4 +60,13 @@ public class TalhaoRepository : ITalhaoRepository
         
         return true;
     }
+
+    public async Task<bool> AtualizarStatusAsync(Guid id, StatusTalhao status)
+    {
+        var talhao = await _context.Talhoes.FindAsync(id);
+        if (talhao == null) return false;
+        talhao.Status = status;
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

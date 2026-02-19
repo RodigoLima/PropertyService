@@ -1,4 +1,4 @@
-# PropertyService
+# PropertyService 
 
 Microsserviço de propriedades e talhões da plataforma AgroSolutions. Responsável pelo cadastro de propriedades e talhões (áreas de plantio com cultura), com status por talhão (Normal, Alerta de Seca, Risco de Praga) atualizado via mensageria a partir do motor de alertas.
 
